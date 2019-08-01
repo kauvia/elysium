@@ -1,6 +1,6 @@
 class EntityManager {
-	constructor() {
-		this.entityMap = new Map();
+	constructor(entityMap) {
+		this.entityMap = entityMap;
 		this.entityCount = 0;
 
 	}
