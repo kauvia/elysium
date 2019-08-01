@@ -1,5 +1,5 @@
 class RenderSys {
-	constructor(SCREEN_WIDTH, SCREEN_HEIGHT, entity) {
+	constructor(SCREEN_WIDTH, SCREEN_HEIGHT, entityMap) {
 		this.app = new PIXI.Application({ width: 800, height: 600 });
 		document.getElementById("container").appendChild(this.app.view);
 
@@ -8,9 +8,9 @@ class RenderSys {
 
 		this.timeOut = 100;
 
-        this.imgPool = new Map();
-        
-        this.entityMap = new Map();
+		this.imgPool = new Map();
+
+		this.entityMap = entityMap;
 	}
 
 	rAF(x) {
@@ -18,8 +18,7 @@ class RenderSys {
 	}
 
 	initialize() {
-        this.loadTextures();
-        this.drawLoop()
+		this.loadTextures();
 	}
 
 	preloadAssets(data) {
@@ -54,12 +53,15 @@ class RenderSys {
 				this.app.stage.addChild(img);
 			}
 		}
-this.entityMap=data
+		this.entityMap = data;
 		console.log(Date.now() - timeNow);
 	}
 
 	handleLoadComplete = () => {
 		console.log("textures loaded");
+		this.loadImgPool(this.entityMap)
+		this.drawLoop();
+		 
 	};
 
 	drawGroup(map, speedMultiplex) {
@@ -81,14 +83,14 @@ this.entityMap=data
 
 	_draw(deltaTime) {
 		for (let entity of this.entityMap.values()) {
-           let sprite = this.imgPool.get(entity.id)
-            if (entity.State.active){
-            const interX = entity.Position.x+entity.Velocity.x
-            const interY = entity.Position.y+entity.Velocity.y
-            sprite.x=interX;
-            sprite.y=interY;
-            sprite.rotation = entity.Position.angle
-            }
+			let sprite = this.imgPool.get(entity.id);
+			if (entity.State.active) {
+				const interX = entity.Position.x + entity.Velocity.x;
+				const interY = entity.Position.y + entity.Velocity.y;
+				sprite.x = interX;
+				sprite.y = interY;
+				sprite.rotation = entity.Position.angle;
+			}
 		}
 	}
 
