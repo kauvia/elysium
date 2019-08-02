@@ -1,9 +1,9 @@
-import { Entity, Display } from "wasm-elysium";
+import {  World } from "wasm-elysium";
 import { memory } from "wasm-elysium/wasm_elysium_bg";
 
-const ENTITY_COUNT = 40000;
+const ENTITY_COUNT = 20000;
 const ENTITY_LENGTH = 6;
-const world = Display.new(ENTITY_COUNT);
+const world = World.new(ENTITY_COUNT);
 
 
 const lens = Math.round(ENTITY_COUNT * ENTITY_LENGTH);
