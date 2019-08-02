@@ -1,11 +1,16 @@
 mod utils;
 
+pub mod ecs;
+
 extern crate rand;
 
 use rand::Rng;
 
 
+
 use wasm_bindgen::prelude::*;
+use crate::ecs::entities::entity::Entity;
+use crate::ecs::entities::entity_manager::EntityManager;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
@@ -13,111 +18,56 @@ use wasm_bindgen::prelude::*;
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
-#[wasm_bindgen]
-#[derive(Clone)]
-
-pub struct Entity {
-    pos_x: i32,
-    pos_y: i32,
-    
-    vel_x: i32,
-    vel_y: i32,
-
-    angle: i32,
-
-    img: i16,
-
-}
-
-fn build_entity(pos_x:i32,pos_y:i32,vel_x:i32,vel_y:i32,angle:i32,img:i16)-> Entity {
-    Entity{
-        pos_x,
-        pos_y,
-        vel_x,
-        vel_y,
-        angle,
-        img,
-    }
-}
-
 
 
 #[wasm_bindgen]
-
-//#[repr(u8)]
-//#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-
-pub fn return_entity()->Entity{
-
-    let mut rng = rand::thread_rng();
-
-    let pos_x=rng.gen_range(50,750);
-    let pos_y=rng.gen_range(50,550);
-    let vel_x=rng.gen_range(0,8)-4;
-    let vel_y=rng.gen_range(0,8)-4;
-    let angle=0;
-    let img=0;
-
-    let entity_one = build_entity(pos_x, pos_y, vel_x, vel_y, angle, img);
-
-    entity_one
+pub struct World {
+    entity_manager : EntityManager,
 }
 
 #[wasm_bindgen]
-pub struct Display {
-    entities: Vec<Entity>,
-}
 
-#[wasm_bindgen]
-impl Display {
+impl World {
 
     pub fn entities(&self) -> *const Entity {
-        self.entities.as_ptr()
+        self.entity_manager.entities_ptr()
     }
 
-    pub fn new( entity_count:u16) -> Display {
+    pub fn new( entity_count:u16) -> World {
 
-        let entities = (0..entity_count)
-            .map(|x| {
-                return_entity()
-            })
-            .collect();
 
-        Display {
-            entities,
+        World {
+         entity_manager:EntityManager::new(entity_count)
         }
+        
     }
 
     pub fn tick(&mut self){
-        let mut next = self.entities.clone();
-     //   let mut rng = rand::thread_rng();
+        let mut next = self.entity_manager.entities.clone();
 
         for mut entity in &mut next{
 
-            // let rngx=rng.gen_range(0,100);
-            // let rngy=rng.gen_range(0,100);
-
-            // if rngx < 30 {
             entity.pos_x+=entity.vel_x;
-
-
-            // } else if rngx < 60{
-            // entity.pos_x-=entity.vel_x;
-
-
-            // }
-
-            // if rngy < 30 {
             entity.pos_y+=entity.vel_y;
 
+            if entity.pos_x < 0{
+                entity.pos_x = 800
 
-            // } else if rngy < 60{
-            // entity.pos_y-=entity.vel_y;
+            } else if entity.pos_x > 800{
+                entity.pos_x = 0
+                
+            }
 
+            if entity.pos_y < 0{
+                entity.pos_y = 600
 
-            // }
+            } else if entity.pos_y > 600{
+                entity.pos_y = 0
+                
+            }
+
         }
-        self.entities = next;
+        self.entity_manager.entities = next;
     
     }
 }
